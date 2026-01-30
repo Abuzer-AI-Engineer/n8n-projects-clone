@@ -55,5 +55,3 @@ The system creates a Google Sheet with:
 - Number of likes
 - Number of comments
 ---
-
-**Disclaimer**: This tool is for inspiration and ideation. Always create original content that reflects your authentic voice and expertise.
