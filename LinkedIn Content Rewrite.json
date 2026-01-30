@@ -1,0 +1,634 @@
+{
+  "name": "LinkedIn Content Rewrite",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3bb87851-879d-4427-936f-d82ebb24eff7",
+              "leftValue": "={{ $json.message.content.verdict }}",
+              "rightValue": "relevant",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1456,
+        80
+      ],
+      "id": "ebe9efff-e27c-4bac-bb6e-a3e58f698350",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "batchSize": 20,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        896,
+        80
+      ],
+      "id": "fff9d053-10d2-47ef-9f44-86583bec5347",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZY-KEPEuGdQmVxTvlN6Coj8RK4LQVTEikLMONt9LS7M",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Post Rewrite",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZY-KEPEuGdQmVxTvlN6Coj8RK4LQVTEikLMONt9LS7M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rZeE_s7ib0dgbjCcHs_skcprLCDDG2OuLe-tjYEU5QY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Post URL": "={{ $('Run an Actor and get dataset').item.json.url }}",
+            "Likes": "={{ $('Run an Actor and get dataset').item.json.numLikes }}",
+            "Comments": "={{ $('Run an Actor and get dataset').item.json.numComments }}",
+            "Creator": "={{ $('Run an Actor and get dataset').item.json.authorName }}",
+            "Orginal Post Text": "={{ $('Run an Actor and get dataset').item.json.text }}",
+            "Rewriten Post Text": "={{ $json.output[0].content[0].text }}",
+            "Date": "={{ $('Run an Actor and get dataset').item.json.postedAtISO.toDateTime().format('DDD') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Creator",
+              "displayName": "Creator",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post URL",
+              "displayName": "Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Orginal Post Text",
+              "displayName": "Orginal Post Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rewriten Post Text",
+              "displayName": "Rewriten Post Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2064,
+        80
+      ],
+      "id": "d7975f23-420b-4175-9239-ed428c4dd4bc",
+      "name": "Add IG post to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "65ADzvrVJQVenUtP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful, precise LinkedIn post classifier for an AI -focused audience (people who build with or want to learn AI, understand cool news that come out of it that actually strike have an interesting take).",
+              "role": "system"
+            },
+            {
+              "content": "=Classify a LinkedIn post for an automation-focused audience. Return only {\"verdict\":\"relevant or not_relevant\"}. \n\n- Relevant if it's valuable advice for someone looking to start an AI Agency\n\n- Not relevant if it's motivational/personal, non-automation coding, crypto/politics/finance, or tool discounts etc.. or vague hype with no build/impact. \n\n\nOutput valid JSON only.\n{\"verdict\":\"relevant or not_relevant\"}"
+            },
+            {
+              "content": "=Here is the LinkedIn post to analyse:  {{ $json.text }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1136,
+        80
+      ],
+      "id": "c7ee6714-d406-4ec6-a2ca-a02c1aced49f",
+      "name": "Relevant?",
+      "credentials": {
+        "openAiApi": {
+          "id": "PPH3yFTf1OmiEsZy",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. Scrape LinkedIn Post\n",
+        "height": 272,
+        "width": 672
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "fccf1b2c-cfc3-4720-9ed4-2ca21dff0c79",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Check Relevance\n",
+        "height": 272,
+        "width": 560,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "fe574bb3-e832-41a6-a078-74c3f42b877f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Re-Write Post and Add to DB\n",
+        "height": 272,
+        "width": 1008,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "27737854-5ad1-4ed6-bbc3-7b9f23b937c3",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Accounts",
+        "formDescription": "Please add two LinkedIn accounts of your favourite creators to then be able to scrape their posts. ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "LinkedIn Account Number 1 (URL)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "LinkedIn Account Number 2 (URL)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Number of posts / profile",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        80
+      ],
+      "id": "8028fac3-17be-4ead-bb4f-d9c87cacc0f5",
+      "name": "LinkedIn Accounts",
+      "webhookId": "356ee2f2-3d81-48f3-af9b-9b5bdbcb1c5c"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "Wpp1BZ6yGWjySadk3",
+          "mode": "list",
+          "cachedResultName": "Linkedin Post Scraper ✅ No cookies ✅ $1 per 1k posts (supreme_coder/linkedin-post)",
+          "cachedResultUrl": "https://console.apify.com/actors/Wpp1BZ6yGWjySadk3/input"
+        },
+        "customBody": "={\n    \"deepScrape\": true,\n    \"limitPerSource\": 5,\n    \"rawData\": false,\n    \"urls\": [\n        \"{{ $json['LinkedIn Account Number 1 (URL)'] }}\",\n        \"{{ $json['LinkedIn Account Number 2 (URL)'] }}\"\n    ]\n}",
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        320,
+        80
+      ],
+      "id": "9abbedcb-4520-4cde-b52d-26ff9d573f2e",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "5GqAKnNKnDIuQnEY",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "#Overview You're a helpful, intelligent writing assistant. ##Task Rewrite the LinkedIn post that I'm going to give you in a way that encapsulates the original theme but uses different words. I am targeting an audience that are people who build with or want to learn AI. They are always fascinated by new discoveries or news that actually make an impact. ## My Results Over the last year I have tryed bunch of AI Tools, want to help businesses adopt AI and providing AI Audit service. #Rules - Use a no fluff, young tone when re-writing the LinkedIn post - ONLY output the LinkedIn post and that's it - Don't sound robotic, sound human and young"
+            },
+            {
+              "content": "=Here is the LinkedIn post to rewrite: {{ $('Run an Actor and get dataset').item.json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        80
+      ],
+      "id": "4307b352-29c3-441a-884d-647cb268de82",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PPH3yFTf1OmiEsZy",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Relevant?": [
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "not_relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "not_relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "not_relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "not_relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "verdict": "relevant"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Relevant?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add IG post to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relevant?": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Accounts": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Add IG post to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0af98765-89a5-4493-8917-6f712b437012",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9ab3c055dcf0e20c7e127d787f7062e20dafc9fcb20687b851b1ee6b0af0ac93"
+  },
+  "id": "fTE6D9EUtUB7ip3ej4I6g",
+  "tags": []
+}
