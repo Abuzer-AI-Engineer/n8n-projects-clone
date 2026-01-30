@@ -1,6 +1,6 @@
 # n8n-projects-clone
 
-## LinkedIn Content Parasite System
+## 1. LinkedIn Content Parasite System
 
 A automated workflow that scrapes LinkedIn posts from top creators and competitors, filters them for relevance, and rewrites them in your unique tone of voice.
 
@@ -44,7 +44,7 @@ A automated workflow that scrapes LinkedIn posts from top creators and competito
    - Define your tone of voice
    - Set content filtering criteria
 
-## 📊 Output Format
+### 📊 Output Format
 
 The system creates a Google Sheet with:
 - Date of post
