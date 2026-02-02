@@ -3,6 +3,7 @@
 ## 1. LinkedIn Content Rewrite
 
 A automated workflow that scrapes LinkedIn posts from top creators and competitors, filters them for relevance, and rewrites them in your unique tone of voice.
+Demo Link: https://youtu.be/mVXTEgjYEiU
 
 ### 🎯 What It Does
 
