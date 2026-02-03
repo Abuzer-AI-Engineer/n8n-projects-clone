@@ -25,7 +25,6 @@ Demo Link: https://youtu.be/mVXTEgjYEiU
 - n8n account (self-hosted or cloud)
 - Apify account ($5 free credits included)
 - OpenAI API key
-- Anthropic API key (Claude)
 - Google account
 
 ### 🚀 Setup
